@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Forever Ever – Table Authorization</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0d0d0f">
+<style>
+  :root{
+    --night:#0d0d0f; --night-2:#17171b; --brass:#b8955a; --brass-2:#d8bd8a;
+    --paper:#faf8f4; --card:#ffffff; --ink:#15151a; --muted:#6b6b74; --line:#e3ded4; --soft:#f3efe7;
+    --warn:#b42318; --ok:#1f7a4d; --radius:14px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;background:var(--paper);color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  .hero{background:radial-gradient(120% 140% at 50% 0%,#24222a 0%,var(--night) 60%);color:#fff;padding:calc(28px + env(safe-area-inset-top)) 16px 34px;text-align:center;border-bottom:1px solid #000}
+  .hero .mark{font-family:"Cormorant Garamond",Georgia,serif;font-weight:600;font-size:40px;letter-spacing:8px;margin:0;line-height:1}
+  .hero .rule{width:56px;height:1px;background:var(--brass);margin:14px auto}
+  .hero .sub{margin:0;font-size:12px;font-weight:600;letter-spacing:3px;color:var(--brass-2);text-transform:uppercase}
+  .wrap{max-width:780px;margin:-18px auto 0;padding:0 16px calc(24px + env(safe-area-inset-bottom))}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;margin:16px 0;box-shadow:0 1px 2px rgba(20,20,26,.04),0 8px 24px rgba(20,20,26,.05)}
+  .card h2{display:flex;align-items:center;gap:10px;font-size:12px;letter-spacing:2px;text-transform:uppercase;margin:0 0 16px;color:var(--muted);font-weight:700}
+  .card h2 .n{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--night);color:var(--brass-2);font-size:11px;letter-spacing:0}
+  .grid{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
+  .c2{grid-column:span 2}.c3{grid-column:span 3}.c6{grid-column:span 6}
+  @media (max-width:640px){.c2,.c3{grid-column:span 6}.hero .mark{font-size:32px;letter-spacing:6px}.card{padding:18px}}
+  label{display:block;font-size:12px;font-weight:600;letter-spacing:.3px;color:var(--muted);margin-bottom:6px}
+  input,select{width:100%;font:inherit;font-size:17px;padding:13px 14px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);-webkit-appearance:none;appearance:none;transition:border-color .15s,box-shadow .15s}
+  select{background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 20px) 55%,calc(100% - 15px) 55%;background-size:5px 5px;background-repeat:no-repeat;padding-right:36px}
+  input:focus,select:focus{outline:none;border-color:var(--brass);box-shadow:0 0 0 3px rgba(184,149,90,.22)}
+  input.bad{border-color:var(--warn);box-shadow:0 0 0 3px rgba(180,35,24,.12)}
+  .min-box{border:2px solid var(--night);border-radius:12px;padding:18px;background:var(--soft)}
+  .money{position:relative}.money span{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted);font-weight:600}.money input{padding-left:28px}
+  .big label{color:var(--ink);font-size:13px;letter-spacing:1.5px}
+  .big input{font-size:26px;font-weight:700;padding-top:10px;padding-bottom:10px}
+  .balance{font-size:26px;font-weight:700;padding:8px 0 0;font-variant-numeric:tabular-nums}
+  .note{font-size:13px;color:var(--muted);margin:12px 0 0}
+  .disclosure{margin:18px 0 0;padding:16px 18px;border-left:4px solid var(--brass);background:#fffaf0;border-radius:0 10px 10px 0;font-size:18px;font-weight:700;line-height:1.4}
+  .disclosure u{text-underline-offset:3px;text-decoration-thickness:2px}
+  .terms{max-height:360px;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:16px 18px;background:#fff;font-size:14.5px;-webkit-overflow-scrolling:touch}
+  .terms p{margin:0 0 12px}.terms p:last-child{margin:0}
+  .check{display:flex;gap:12px;align-items:flex-start;margin:14px 0 0;font-size:15.5px;cursor:pointer}
+  .check input{width:24px;height:24px;flex:0 0 24px;margin:1px 0 0;border-radius:6px;border:1.5px solid #b9b2a5;padding:0;display:grid;place-items:center}
+  .check input:checked{background:var(--night);border-color:var(--night)}
+  .check input:checked::after{content:"";width:6px;height:11px;border:solid var(--brass-2);border-width:0 2.5px 2.5px 0;transform:rotate(45deg) translate(-1px,-1px)}
+  .sig-wrap{border:1.5px solid var(--line);border-radius:12px;background:#fff;position:relative;touch-action:none;overflow:hidden}
+  canvas{display:block;width:100%;height:240px;cursor:crosshair}
+  @media (min-width:900px){canvas{height:260px}}
+  .sig-line{position:absolute;left:24px;right:24px;bottom:46px;border-top:1.5px solid #cfc8bb;pointer-events:none}
+  .sig-x{position:absolute;left:24px;bottom:52px;font-size:22px;color:#b9b2a5;pointer-events:none}
+  .sig-label{position:absolute;left:24px;bottom:16px;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);pointer-events:none}
+  .sig-hint{position:absolute;inset:0;display:grid;place-items:center;color:#c9c2b5;font-size:15px;pointer-events:none;transition:opacity .2s}
+  .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;align-items:center}
+  button{font:inherit;font-weight:600;border-radius:10px;padding:12px 18px;border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer}
+  button.primary{position:relative;background:var(--night);color:#fff;border-color:var(--night);width:100%;font-size:18px;letter-spacing:.5px;padding:18px;margin-top:6px;box-shadow:0 10px 24px rgba(13,13,15,.18)}
+  button.primary:after{content:"";position:absolute;left:18px;right:18px;bottom:8px;height:1px;background:linear-gradient(90deg,transparent,var(--brass),transparent);opacity:.7}
+  button:disabled{opacity:.55;cursor:not-allowed}
+  .err{color:var(--warn);font-size:14.5px;font-weight:600;margin:12px 2px 0;min-height:1.2em;text-align:center}
+  .done{text-align:center;padding:48px 22px}
+  .done .tick{width:64px;height:64px;border-radius:50%;background:var(--night);display:grid;place-items:center;margin:0 auto 16px}
+  .done .tick:after{content:"";width:14px;height:26px;border:solid var(--brass-2);border-width:0 4px 4px 0;transform:rotate(45deg) translate(-2px,-3px)}
+  .done h2{justify-content:center;font-family:"Cormorant Garamond",Georgia,serif;font-size:30px;letter-spacing:1px;text-transform:none;color:var(--ink);margin:0 0 8px}
+  .ref{font-family:ui-monospace,Menlo,monospace;font-size:15px;background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:5px 10px}
+  .fine{font-size:12px;color:var(--muted);text-align:center;margin:20px 0 10px;letter-spacing:.3px}
+  .hidden{display:none!important}
+  .host{background:var(--soft);border-style:dashed}
+  .host h2 .n{font-size:10px}
+</style>
+</head>
+<body>
+<div class="hero">
+  <p class="mark">FOREVER EVER</p>
+  <div class="rule"></div>
+  <p class="sub">Table &amp; Bottle Service Authorization</p>
+</div>
+<div class="wrap">
+
+  <form id="authForm" novalidate>
+    <!-- Host -->
+    <section class="card host">
+      <h2><span class="n">★</span>Host – fill in before handing to guest</h2>
+      <div class="grid">
+        <div class="c3"><label for="srRes">SevenRooms reservation # / guest name</label><input id="srRes" name="srRes" placeholder="Optional – walk-ins leave blank"></div>
+        <div class="c3"><label for="host">Host</label><input id="host" name="host"></div>
+        <div class="c3"><label for="server">Server</label><input id="server" name="server"></div>
+        <div class="c3"><label for="promoter">Promoter</label><input id="promoter" name="promoter"></div>
+      </div>
+    </section>
+
+    <!-- Table & guest -->
+    <section class="card">
+      <h2><span class="n">1</span>Table &amp; guest</h2>
+      <div class="grid">
+        <div class="c2"><label for="date">Date</label><input id="date" name="date" type="date" required></div>
+        <div class="c2"><label for="table">Table #</label><input id="table" name="table" required placeholder="e.g. T12 or 3"></div>
+        <div class="c2"><label for="party">Party size</label><input id="party" name="party" type="number" min="1" inputmode="numeric"></div>
+        <div class="c6"><label for="guestName">Guest name</label><input id="guestName" name="guestName" required autocomplete="name"></div>
+        <div class="c3"><label for="phone">Phone</label><input id="phone" name="phone" type="tel" autocomplete="tel" required></div>
+        <div class="c3"><label for="email">Email</label><input id="email" name="email" type="email" autocomplete="email"></div>
+      </div>
+    </section>
+
+    <!-- Card -->
+    <section class="card">
+      <h2><span class="n">2</span>Card on file</h2>
+      <div class="grid">
+        <div class="c2"><label for="cardType">Card type</label>
+          <select id="cardType" name="cardType" required>
+            <option value="">Select…</option><option>Visa</option><option>Mastercard</option><option>American Express</option><option>Discover</option><option>Other</option>
+          </select></div>
+        <div class="c2"><label for="last4">Last 4 digits only</label><input id="last4" name="last4" inputmode="numeric" maxlength="4" pattern="\d{4}" required autocomplete="off" placeholder="1234"></div>
+        <div class="c2"><label for="nameOnCard">Name on card</label><input id="nameOnCard" name="nameOnCard" required autocomplete="cc-name"></div>
+      </div>
+      <p class="note">Never enter the full card number, expiration date or security code.</p>
+      <label class="check"><input type="checkbox" id="cardHeld" name="cardHeld"> <span>Card is being held by the Venue until my check is closed</span></label>
+    </section>
+
+    <!-- Minimum -->
+    <section class="card">
+      <h2><span class="n">3</span>Minimum &amp; fees</h2>
+      <div class="min-box">
+        <div class="grid">
+          <div class="c2 big"><label for="minimum">TABLE MINIMUM</label><div class="money"><span>$</span><input id="minimum" name="minimum" type="number" min="0" step="1" inputmode="decimal" required></div></div>
+          <div class="c2"><label for="deposit">Deposit paid (SevenRooms)</label><div class="money"><span>$</span><input id="deposit" name="deposit" type="number" min="0" step="1" inputmode="decimal" value="0"></div></div>
+          <div class="c2"><label>Balance charged at seating</label><div class="balance" id="balance">$0</div></div>
+        </div>
+        <p class="note">The minimum is charged in full at seating, before the show fee, sales tax and gratuity.</p>
+      </div>
+      <p class="disclosure">A 22% SHOW FEE is added to this check. <u>This charge is not a gratuity and will not be distributed to service staff.</u> Gratuity is not included and is at your discretion.</p>
+    </section>
+
+    <!-- Terms -->
+    <section class="card">
+      <h2><span class="n">4</span>Terms of table authorization</h2>
+      <div class="terms" id="terms">
+        <p><b>1. Authorization.</b> I authorize Forever Ever (the "Venue") to charge the card presented for the table minimum, all purchases added to this table's check, the 22% show fee, applicable sales tax, and any gratuity I add. I confirm I am the cardholder or am authorized to use this card.</p>
+        <p><b>2. Card hold.</b> A pre-authorization hold is placed on my card when I am seated. My bank, not the Venue, controls when unused hold amounts are released, usually within 1–2 business days. Only the final check total is charged.</p>
+        <p><b>3. Table minimum.</b> The table minimum shown above is charged in full at seating, whether or not the full amount is consumed. Unused minimum is not refundable, transferable, or redeemable for cash or for another date. Purchases beyond the minimum are charged at menu prices.</p>
+        <p><b>4. Deposit.</b> Any deposit paid through SevenRooms is applied to the table minimum and is subject to the cancellation policy in my reservation confirmation.</p>
+        <p><b>5. Show fee.</b> A 22% show fee is added to the check. It appears on the receipt as "Show Fee," and is retained by the Venue to cover operating costs. <b><u>This charge is not a gratuity and will not be distributed to service staff.</u></b> Sales tax applies to the fee. Gratuity is not included and is at my discretion.</p>
+        <p><b>6. Open checks.</b> If my check is still open at closing or I leave without closing it, I authorize the Venue to close it to this card for the full balance shown on the check.</p>
+        <p><b>7. Declines.</b> If the hold or final charge is declined, I agree to provide another form of payment before seating or before leaving.</p>
+        <p><b>8. Bottles and service.</b> All bottles are served by Venue staff. Unopened bottles may be returned only with manager approval before the check is closed. Opened bottles may not leave the premises.</p>
+        <p><b>9. Age and ID.</b> All guests must be 21 or older with valid government ID. The Venue may refuse or end service at its discretion; charges for items already served remain due.</p>
+        <p><b>10. Card held.</b> If my card is held with this form, it will be returned when my check is closed. The Venue does not record full card numbers.</p>
+        <p><b>11. Disputes.</b> I agree that charges within these Terms are authorized and that I will contact the Venue first with any billing question.</p>
+        <p><b>12. Entire agreement.</b> These Terms and my reservation confirmation are the entire agreement for this visit. If any term is unenforceable, the rest remain in effect.</p>
+      </div>
+      <label class="check"><input type="checkbox" id="agree" required> <span>I have read and agree to these Terms, including the table minimum and the 22% Show Fee.</span></label>
+      <label class="check"><input type="checkbox" id="esign" required> <span>I agree to sign electronically. My electronic signature has the same effect as a handwritten signature.</span></label>
+    </section>
+
+    <!-- Signature -->
+    <section class="card">
+      <h2><span class="n">5</span>Cardholder signature</h2>
+      <div class="sig-wrap"><canvas id="sig" aria-label="Signature pad"></canvas><div class="sig-hint" id="sigHint">Sign with your finger or Apple Pencil</div><div class="sig-x">✕</div><div class="sig-line"></div><div class="sig-label">Cardholder signature</div></div>
+      <div class="row"><button type="button" id="clearSig">Clear signature</button></div>
+      <div class="grid" style="margin-top:12px">
+        <div class="c6"><label for="printName">Print name</label><input id="printName" name="printName" required></div>
+      </div>
+    </section>
+
+    <button class="primary" type="submit" id="submitBtn">Sign &amp; submit</button>
+    <div class="err" id="err" role="alert"></div>
+  </form>
+
+  <section class="card done hidden" id="done">
+    <div class="tick"></div><h2>Thank you</h2>
+    <p>Your authorization has been signed and saved.<br>Please hand the device back to your host.</p>
+    <p>Reference: <span class="ref" id="refId"></span></p>
+    <div class="row" style="justify-content:center"><button type="button" id="newForm">Start a new form (staff)</button></div>
+  </section>
+
+  <p class="fine">Forever Ever · Your full card number is never collected on this form.</p>
+</div>
+
+<script>
+/* ====== CONFIG: paste the Google Apps Script web app URL here after deploying ====== */
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxhossWyP6ufb_sG1JpsRax5oZgDwfDVowSkn5pVw-nALCn6r19Hrwg2j82CZCQW4Ei/exec";
+const FORM_KEY   = "ForeverEver-2026";   // must match FORM_KEY in Code.gs
+/* =================================================================================== */
+
+const $ = id => document.getElementById(id);
+const form = $('authForm');
+
+// Today's date by default (local time)
+(function(){ const d=new Date(); const p=n=>String(n).padStart(2,'0'); $('date').value=`${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`; })();
+
+// Balance = minimum - deposit
+function updateBalance(){
+  const m = parseFloat($('minimum').value)||0, d = parseFloat($('deposit').value)||0;
+  $('balance').textContent = '$' + Math.max(0, m-d).toLocaleString('en-US');
+}
+['minimum','deposit'].forEach(id=>$(id).addEventListener('input', updateBalance));
+
+// Copy guest name into print name until edited
+let printTouched=false;
+$('printName').addEventListener('input',()=>printTouched=true);
+$('nameOnCard').addEventListener('input',()=>{ if(!printTouched) $('printName').value=$('nameOnCard').value; });
+
+// Last 4: digits only
+$('last4').addEventListener('input', e=>{ e.target.value = e.target.value.replace(/\D/g,'').slice(0,4); });
+
+// ---------- Signature pad ----------
+const canvas=$('sig'), ctx=canvas.getContext('2d');
+let drawing=false, hasInk=false, last=null;
+function sizeCanvas(){
+  const r=canvas.getBoundingClientRect(), dpr=window.devicePixelRatio||1;
+  const img = hasInk ? canvas.toDataURL() : null;
+  canvas.width=Math.round(r.width*dpr); canvas.height=Math.round(r.height*dpr);
+  ctx.setTransform(dpr,0,0,dpr,0,0); ctx.lineWidth=2.6; ctx.lineCap='round'; ctx.lineJoin='round'; ctx.strokeStyle='#111827';
+  if(img){ const i=new Image(); i.onload=()=>ctx.drawImage(i,0,0,r.width,r.height); i.src=img; }
+}
+function pos(e){ const r=canvas.getBoundingClientRect(); return {x:e.clientX-r.left, y:e.clientY-r.top}; }
+canvas.addEventListener('pointerdown',e=>{ drawing=true; last=pos(e); canvas.setPointerCapture(e.pointerId); });
+canvas.addEventListener('pointermove',e=>{ if(!drawing) return; const p=pos(e); const mid={x:(last.x+p.x)/2,y:(last.y+p.y)/2}; ctx.beginPath(); ctx.moveTo(last.mx??last.x,last.my??last.y); ctx.quadraticCurveTo(last.x,last.y,mid.x,mid.y); ctx.stroke(); last={x:p.x,y:p.y,mx:mid.x,my:mid.y}; if(!hasInk){hasInk=true; $('sigHint').style.opacity=0;} });
+['pointerup','pointercancel','pointerleave'].forEach(t=>canvas.addEventListener(t,()=>drawing=false));
+$('clearSig').addEventListener('click',()=>{ ctx.clearRect(0,0,canvas.width,canvas.height); hasInk=false; $('sigHint').style.opacity=1; });
+window.addEventListener('resize', sizeCanvas); sizeCanvas();
+
+// Signature PNG on white background
+function signaturePng(){
+  const out=document.createElement('canvas'); out.width=canvas.width; out.height=canvas.height;
+  const o=out.getContext('2d'); o.fillStyle='#fff'; o.fillRect(0,0,out.width,out.height); o.drawImage(canvas,0,0);
+  return out.toDataURL('image/png');
+}
+
+// ---------- Submit ----------
+function fail(msg){ $('err').textContent=msg; }
+form.addEventListener('submit', async e=>{
+  e.preventDefault(); fail('');
+  const required=['date','table','guestName','phone','cardType','last4','nameOnCard','minimum','printName'];
+  for(const id of required){ if(!$(id).value.trim()){ $(id).classList.add('bad'); $(id).focus(); return fail('Please complete: '+($(id).labels[0]?.textContent||id)); } }
+  if(!/^\d{4}$/.test($('last4').value)) { $('last4').classList.add('bad'); $('last4').focus(); return fail('Enter only the last 4 digits of the card.'); }
+  if(!$('agree').checked) return fail('Please check the box to agree to the Terms.');
+  if(!$('esign').checked) return fail('Please check the box to agree to sign electronically.');
+  if(!hasInk) return fail('Please sign in the signature box.');
+  if(!SCRIPT_URL.startsWith('https://')) return fail('Setup not finished: the Google Drive link has not been added yet.');
+
+  const data = Object.fromEntries(new FormData(form).entries());
+  data.cardHeld = $('cardHeld').checked ? 'Yes' : 'No';
+  data.balance = $('balance').textContent;
+  data.signature = signaturePng();
+  data.agreedToTerms = 'Yes'; data.agreedToEsign = 'Yes';
+  data.signedAtLocal = new Date().toString();
+  data.userAgent = navigator.userAgent;
+  data.formVersion = 'Show Fee 22% – 2026-11-09';
+  data.key = FORM_KEY;
+
+  const btn=$('submitBtn'); btn.disabled=true; btn.textContent='Saving…';
+  try{
+    const res = await fetch(SCRIPT_URL, { method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(data) });
+    const out = await res.json();
+    if(!out.ok) throw new Error(out.error||'Save failed');
+    $('refId').textContent = out.id;
+    form.classList.add('hidden'); $('done').classList.remove('hidden'); window.scrollTo(0,0);
+  }catch(err){
+    fail('Could not save. Check the connection and try again, or use a paper form. ('+err.message+')');
+  }finally{ btn.disabled=false; btn.textContent='Sign & submit'; }
+});
+
+document.querySelectorAll('input,select').forEach(el=>el.addEventListener('input',()=>el.classList.remove('bad')));
+$('newForm').addEventListener('click',()=>{ location.reload(); });
+updateBalance();
+</script>
+</body>
+</html>
