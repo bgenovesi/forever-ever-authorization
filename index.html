@@ -71,6 +71,25 @@
   .hidden{display:none!important}
   .host{background:var(--soft);border-style:dashed}
   .host h2 .n{font-size:10px}
+  .photo-slot{margin-top:2px}
+  .photo-drop{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;min-height:168px;padding:18px 14px;border:1.5px dashed var(--brass);border-radius:12px;background:#fff;color:var(--ink);cursor:pointer;transition:border-color .15s,box-shadow .15s;overflow:hidden}
+  .photo-drop:hover,.photo-drop:focus-within{border-color:var(--night);box-shadow:0 0 0 3px rgba(184,149,90,.22)}
+  .photo-drop .ph-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
+  .photo-drop svg{width:34px;height:34px;stroke:var(--brass);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+  .photo-drop .ph-title{font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase}
+  .photo-drop .ph-sub{font-size:12.5px;color:var(--muted);line-height:1.35}
+  .photo-drop .ph-cta{margin-top:4px;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#fff;background:var(--night);border-radius:999px;padding:8px 16px}
+  .photo-drop .ph-cta em{font-style:normal;color:var(--brass-2)}
+  .photo-drop img{display:none;width:100%;height:168px;object-fit:cover;border-radius:8px}
+  .photo-drop.has-photo{padding:8px;border-style:solid;border-color:var(--ok)}
+  .photo-drop.has-photo img{display:block}
+  .photo-drop.has-photo .ph-empty{display:none}
+  .photo-drop.bad{border-color:var(--warn);box-shadow:0 0 0 3px rgba(180,35,24,.12)}
+  .photo-state{display:none;margin-top:8px;font-size:13px;font-weight:700;color:var(--ok)}
+  .photo-state.on{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .photo-state button{padding:7px 12px;font-size:13px}
+  .photo-note{font-size:12.5px;color:var(--muted);margin:12px 0 0}
+  .photo-note b{color:var(--ink)}
 </style>
 </head>
 <body>
@@ -90,7 +109,38 @@
         <div class="c3"><label for="host">Host</label><input id="host" name="host"></div>
         <div class="c3"><label for="server">Server</label><input id="server" name="server"></div>
         <div class="c3"><label for="promoter">Promoter</label><input id="promoter" name="promoter"></div>
+
+        <div class="c3 photo-slot">
+          <label for="cardPhoto">Photo of card</label>
+          <label class="photo-drop" id="cardPhotoDrop" for="cardPhoto">
+            <img id="cardPhotoPreview" alt="Photo of the guest's card">
+            <span class="ph-empty">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
+              <span class="ph-title">Photo of card</span>
+              <span class="ph-sub">Front of the card, flat &amp; legible — no glare, no fingers over the numbers</span>
+              <span class="ph-cta">Tap to take photo <em>· or upload</em></span>
+            </span>
+          </label>
+          <input id="cardPhoto" type="file" accept="image/*" class="hidden">
+          <div class="photo-state" id="cardPhotoState"><span>✓ Card photo added</span><button type="button" data-retake="cardPhoto">Retake</button><button type="button" data-remove="cardPhoto">Remove</button></div>
+        </div>
+
+        <div class="c3 photo-slot">
+          <label for="idPhoto">Photo of ID</label>
+          <label class="photo-drop" id="idPhotoDrop" for="idPhoto">
+            <img id="idPhotoPreview" alt="Photo of the guest's government ID">
+            <span class="ph-empty">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="11" r="2"/><path d="M5.5 17c.6-1.6 1.7-2.4 3-2.4s2.4.8 3 2.4M14 9.5h5M14 13h5"/></svg>
+              <span class="ph-title">Photo of ID</span>
+              <span class="ph-sub">Front of government ID — photo &amp; name clearly legible</span>
+              <span class="ph-cta">Tap to take photo <em>· or upload</em></span>
+            </span>
+          </label>
+          <input id="idPhoto" type="file" accept="image/*" class="hidden">
+          <div class="photo-state" id="idPhotoState"><span>✓ ID photo added</span><button type="button" data-retake="idPhoto">Retake</button><button type="button" data-remove="idPhoto">Remove</button></div>
+        </div>
       </div>
+      <p class="photo-note"><b>Host:</b> take both photos before handing the device to the guest. Both are required and are saved with this signed authorization.</p>
     </section>
 
     <!-- Table & guest -->
@@ -177,7 +227,7 @@
     <div class="row" style="justify-content:center"><button type="button" id="newForm">Start a new form (staff)</button></div>
   </section>
 
-  <p class="fine">Forever Ever · Your full card number is never collected on this form.</p>
+  <p class="fine">Forever Ever · Card &amp; ID photos taken by the host are saved with this signed authorization. The full card number is never typed into this form.</p>
 </div>
 
 <script>
@@ -207,6 +257,41 @@ $('nameOnCard').addEventListener('input',()=>{ if(!printTouched) $('printName').
 // Last 4: digits only
 $('last4').addEventListener('input', e=>{ e.target.value = e.target.value.replace(/\D/g,'').slice(0,4); });
 
+// ---------- Host photos: card + ID ----------
+// Photos are downscaled to JPEG in the browser so the save stays fast and small.
+const hostPhotos = { cardPhoto:null, idPhoto:null };
+function processPhoto(file, done){
+  const url = URL.createObjectURL(file);
+  const img = new Image();
+  img.onload = ()=>{
+    const max = 1600, scale = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
+    const w = Math.round(img.naturalWidth * scale), h = Math.round(img.naturalHeight * scale);
+    const c = document.createElement('canvas'); c.width = w; c.height = h;
+    const cx = c.getContext('2d'); cx.fillStyle = '#fff'; cx.fillRect(0,0,w,h); cx.drawImage(img,0,0,w,h);
+    URL.revokeObjectURL(url);
+    done(c.toDataURL('image/jpeg', .85));
+  };
+  img.onerror = ()=>{ URL.revokeObjectURL(url); fail('That photo could not be read — please try again.'); };
+  img.src = url;
+}
+function setPhoto(id, dataUrl){
+  hostPhotos[id] = dataUrl;
+  $(id+'Preview').src = dataUrl || '';
+  $(id+'Drop').classList.toggle('has-photo', !!dataUrl);
+  $(id+'Drop').classList.remove('bad');
+  $(id+'State').classList.toggle('on', !!dataUrl);
+  if(!dataUrl) $(id).value = '';
+}
+['cardPhoto','idPhoto'].forEach(id=>{
+  $(id).addEventListener('change', e=>{
+    const f = e.target.files && e.target.files[0];
+    if(!f) return;
+    processPhoto(f, dataUrl => setPhoto(id, dataUrl));
+  });
+});
+document.querySelectorAll('[data-retake]').forEach(b=>b.addEventListener('click',()=>{ $(b.dataset.retake).click(); }));
+document.querySelectorAll('[data-remove]').forEach(b=>b.addEventListener('click',()=>{ setPhoto(b.dataset.remove, null); }));
+
 // ---------- Signature pad ----------
 const canvas=$('sig'), ctx=canvas.getContext('2d');
 let drawing=false, hasInk=false, last=null;
@@ -235,6 +320,12 @@ function signaturePng(){
 function fail(msg){ $('err').textContent=msg; }
 form.addEventListener('submit', async e=>{
   e.preventDefault(); fail('');
+  if(!hostPhotos.cardPhoto || !hostPhotos.idPhoto){
+    const missing = !hostPhotos.cardPhoto ? 'cardPhoto' : 'idPhoto';
+    $(missing+'Drop').classList.add('bad');
+    $(missing+'Drop').scrollIntoView({behavior:'smooth', block:'center'});
+    return fail('Host: please add ' + (!hostPhotos.cardPhoto && !hostPhotos.idPhoto ? 'photos of the card and the ID' : !hostPhotos.cardPhoto ? 'a photo of the card' : 'a photo of the ID') + ' at the top before submitting.');
+  }
   const required=['date','table','guestName','phone','cardType','last4','nameOnCard','minimum','printName'];
   for(const id of required){ if(!$(id).value.trim()){ $(id).classList.add('bad'); $(id).focus(); return fail('Please complete: '+($(id).labels[0]?.textContent||id)); } }
   if(!/^\d{4}$/.test($('last4').value)) { $('last4').classList.add('bad'); $('last4').focus(); return fail('Enter only the last 4 digits of the card.'); }
@@ -246,11 +337,13 @@ form.addEventListener('submit', async e=>{
   const data = Object.fromEntries(new FormData(form).entries());
   data.cardHeld = $('cardHeld').checked ? 'Yes' : 'No';
   data.balance = $('balance').textContent;
+  data.cardPhoto = hostPhotos.cardPhoto;
+  data.idPhoto = hostPhotos.idPhoto;
   data.signature = signaturePng();
   data.agreedToTerms = 'Yes'; data.agreedToEsign = 'Yes';
   data.signedAtLocal = new Date().toString();
   data.userAgent = navigator.userAgent;
-  data.formVersion = 'Show Fee 22% – 2026-11-09';
+  data.formVersion = 'Show Fee 22% – 2026-11-14 + host card/ID photos';
   data.key = FORM_KEY;
 
   const btn=$('submitBtn'); btn.disabled=true; btn.textContent='Saving…';
